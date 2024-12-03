@@ -3,15 +3,20 @@ variable "env" {
   type        = string
   description = "Environment name"
 }
-variable "app_name" {
+
+variable "name" {
   type        = string
-  description = "Name of the application"
+  description = "Name of the service"
 }
+
 variable "parameters" {
-  description = "List of values to put to AWS SSM Parameter Store"
-  type = map(object({
-    name        = string
-    value       = string
-    description = optional(string)
-  }))
+  type        = map(string)
+  description = "Map of SSM ParameterStore parameters to store - by default, /$var.env/$var.name/*"
+}
+
+locals {
+  parameters = merge(
+    { ENV = var.env },
+    var.parameters
+  )
 }

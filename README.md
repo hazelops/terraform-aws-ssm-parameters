@@ -1,28 +1,31 @@
 # Terraform AWS SSM APP Module
 
-##  
+The main goal of the module is to provide a consistent way to manage service SSM parameters. Suitable for use with [External Secrets](https://external-secrets.io/latest/).
+
+
+This module uploads strings to AWS SSM Parameter Store.
+
+If you need to store something in a different format, please convert it to a string. Strings are stored as SecureString.
+
+For proper usage, refer to the example in this guide and the [Examples](./examples) folder.
 
 ## Usage example:
-```terraform
-module "test_ssm_app" {
-  source = "../terraform/terraform-aws-ssm-app"
-  env    = var.env
-  parameters = {
-    "vpc_id" = {
-      name        = "vpc_id"
-      value       = module.vpc.vpc_id
-      description = "VPC ID"
-    }
-    "vpc_cidr" = {
-      name        = "vpc_cidr"
-      value       = module.vpc.vpc_cidr_block
-      description = "VPC CIDR block"
-    }
-  }
 
-  app_name = "krabby"
+```terraform
+module "krabby" {
+  source = "hazelops/terraform-aws-ssm-app/aws"
+  name   = "krabby"
+  env    = "dev"
+
+  parameters = {
+    "API_KEY" : "api-XXXXXXX",
+    "s3_bucket_arn" : "arn_XXXX",
+    "s3_bucket_name": "dev-krabby"
+  }
 }
 ```
+
+
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -52,9 +55,9 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_app_name"></a> [app\_name](#input\_app\_name) | Name of the application | `string` | n/a | yes |
 | <a name="input_env"></a> [env](#input\_env) | Environment name | `string` | n/a | yes |
-| <a name="input_parameters"></a> [parameters](#input\_parameters) | List of values to put to AWS SSM Parameter Store | <pre>map(object({<br>    name        = string<br>    value       = string<br>    description = optional(string)<br>  }))</pre> | n/a | yes |
+| <a name="input_name"></a> [name](#input\_name) | Name of the service | `string` | n/a | yes |
+| <a name="input_parameters"></a> [parameters](#input\_parameters) | Map of SSM ParameterStore parameters to store - by default, /$var.env/$var.name/* | `map(string)` | n/a | yes |
 
 ## Outputs
 

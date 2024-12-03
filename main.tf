@@ -1,15 +1,13 @@
 # SSM Parameter
 resource "aws_ssm_parameter" "this" {
-  for_each = var.parameters
+  for_each = local.parameters
 
-  name        = "/${var.env}/${var.app_name}/${each.value.name}"
-  value       = each.value.value
+  name        = "/${var.env}/${var.name}/${each.key}"
+  value       = each.value
   type        = "SecureString"
-  description = each.value.description
+  description = "The parameter is set for the application: ${var.name}. Managed by Terraform."
+
   lifecycle {
-    ignore_changes = [value]
-  }
-  tags = {
-    Application = each.value.name
+    create_before_destroy = true
   }
 }
