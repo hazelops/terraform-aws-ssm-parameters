@@ -1,4 +1,3 @@
-# Output
 output "ssm_parameter_paths" {
   description = "A list of paths to created parameters"
   value = [

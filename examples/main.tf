@@ -1,17 +1,18 @@
-module "s3_bucket" {
-  source  = "terraform-aws-modules/s3-bucket/aws//examples/object"
-  version = "~>4"
-  name    = "krabby_bucket"
+resource "aws_s3_bucket" "this" {
+  bucket = "dev-krabby-bucket"
+  tags = {
+    Name        = "Bucket for storing Krabby logs"
+    Environment = "dev"
+  }
 }
-
 module "krabby" {
   source = "hazelops/terraform-aws-ssm-app/aws"
   env    = "dev"
   name   = "krabby"
 
   parameters = {
-    "API_KEY" : "api-XXXXXXX"
-    "s3_bucket_arn" : module.s3_bucket.s3_bucket_arn
-    "s3_bucket_id" : module.s3_bucket.s3_bucket_id
+    "API_KEY" : "api-XXXXXXXXXXXXXXXXXXXXX"
+    "S3_BUCKET_ARN"  : aws_s3_bucket.this.arn
+    "S3_BUCKET_NAME" : aws_s3_bucket.this.id
   }
 }

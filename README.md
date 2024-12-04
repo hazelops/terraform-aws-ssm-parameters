@@ -3,9 +3,11 @@
 The main goal of the module is to provide a consistent way to manage service SSM parameters. Suitable for use with [External Secrets](https://external-secrets.io/latest/).
 
 
-This module uploads strings to AWS SSM Parameter Store.
+This module manages parameters in AWS SSM Parameter Store.
 
-If you need to store something in a different format, please convert it to a string. Strings are stored as SecureString.
+This module is capable of taking strings as a values. If you need to store something in a different format, please convert it to a string. 
+Strings are stored as SecureString (Standard Tier) with maximum size `4 KB`. 
+See limitations on tiers in [Managing parameter Tiers](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-su-create.html)
 
 For proper usage, refer to the example in this guide and the [Examples](./examples) folder.
 
@@ -18,9 +20,9 @@ module "krabby" {
   env    = "dev"
 
   parameters = {
-    "API_KEY" : "api-XXXXXXX",
-    "s3_bucket_arn" : "arn_XXXX",
-    "s3_bucket_name": "dev-krabby"
+    "API_KEY" : "api-XXXXXXXXXXXXXXXXXXXXX",
+    "S3_BUCKET_ARN" : "arn:aws:s3:::dev-krabby",
+    "S3_BUCKET_NAME": "dev-krabby"
   }
 }
 ```
