@@ -11,6 +11,10 @@ jobs:
     name: Terraform Linter
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    strategy:
+      matrix:
+        terraform_version: [1.5.6, 1.10.1] # Actual and latest versions used
+      fail-fast: false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -19,7 +23,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5.6"
+          terraform_version: "${{ matrix.terraform_version }}"
 
       - name: Terraform init
         run: terraform init
@@ -39,6 +43,10 @@ jobs:
     name: Terraform Formatter
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    strategy:
+      matrix:
+        terraform_version: [1.5.6, 1.10.1] # Actual and latest versions used
+      fail-fast: false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -47,7 +55,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5.6"
+          terraform_version: "${{ matrix.terraform_version }}"
 
       - name: Terraform init
         run: terraform init
