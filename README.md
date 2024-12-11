@@ -1,4 +1,4 @@
-# Terraform AWS SSM APP Module
+# Terraform AWS SSM Parameters Module
 
 The main goal of the module is to provide a consistent way to manage service SSM parameters. Suitable for use with [External Secrets](https://external-secrets.io/latest/).
 
@@ -15,7 +15,7 @@ For proper usage, refer to the example in this guide and the [Examples](./exampl
 
 ```terraform
 module "krabby" {
-  source = "hazelops/terraform-aws-ssm-app/aws"
+  source = "hazelops/terraform-aws-ssm-parameters/aws"
   name   = "krabby"
   env    = "dev"
 
