@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "this" {
   }
 }
 module "krabby" {
-  source = "hazelops/terraform-aws-ssm-app/aws"
+  source = "hazelops/terraform-aws-ssm-parameters/aws"
   env    = "dev"
   name   = "krabby"
 
