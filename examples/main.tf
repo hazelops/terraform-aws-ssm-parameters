@@ -11,8 +11,8 @@ module "krabby" {
   name   = "krabby"
 
   parameters = {
-    "API_KEY" : "api-XXXXXXXXXXXXXXXXXXXXX"
-    "S3_BUCKET_ARN"  : aws_s3_bucket.this.arn
-    "S3_BUCKET_NAME" : aws_s3_bucket.this.id
+    API_KEY = "api-XXXXXXXXXXXXXXXXXXXXX"
+    S3_BUCKET_ARN = aws_s3_bucket.this.arn
+    S3_BUCKET_NAME = aws_s3_bucket.this.id
   }
 }
