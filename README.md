@@ -20,13 +20,18 @@ module "krabby" {
   env    = "dev"
 
   parameters = {
-    "API_KEY" : "api-XXXXXXXXXXXXXXXXXXXXX",
-    "S3_BUCKET_ARN" : "arn:aws:s3:::dev-krabby",
-    "S3_BUCKET_NAME": "dev-krabby"
+    API_KEY = "api-XXXXXXXXXXXXXXXXXXXXX",
+    S3_BUCKET_ARN = "arn:aws:s3:::dev-krabby",
+    S3_BUCKET_NAME = "dev-krabby"
   }
 }
 ```
-
+Parameters in above example will be stored into the following paths:
+```text
+/dev/krabby/API_KEY
+/dev/krabby/S3_BUCKET_ARN
+/dev/krabby/S3_BUCKET_NAME
+```
 
 
 <!-- BEGIN_TF_DOCS -->
