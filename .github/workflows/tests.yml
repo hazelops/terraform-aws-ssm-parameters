@@ -1,0 +1,157 @@
+name: "Tests"
+defaults:
+  run:
+    shell: bash
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  terraform-linter:
+    name: Linter
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        terraform_version: [1.5.6, 1.10.1]
+        directory: [., ./examples/complete/]
+      fail-fast: false
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.terraform_version }}
+
+      - name: Terraform init
+        working-directory: ${{ matrix.directory }}
+        run: terraform init
+
+      - name: Tflint Report Output
+        uses: reviewdog/action-tflint@v1.23.2
+        with:
+          working_directory: ${{ matrix.directory }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tflint_version: "v0.49.0"
+          reporter: github-pr-review
+          fail_on_error: "true"
+          filter_mode: "added"
+          flags: "--module"
+
+  terraform-formatter:
+    name: Formatter
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        terraform_version: [1.5.6, 1.10.1]
+        directory: [., ./examples/complete/]
+      fail-fast: false
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.terraform_version }}
+
+      - name: Terraform init
+        working-directory: ${{ matrix.directory }}
+        run: terraform init
+
+      - name: Terraform Format suggestions
+        working-directory: ${{ matrix.directory }}
+        run: terraform fmt
+
+      - uses: reviewdog/action-suggester@v1.18.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tool_name: "terraform"
+          fail_on_error: "true"
+          filter_mode: "added"
+
+  terraform-e2e:
+    name: E2E Tests (Terraform)
+    strategy:
+      max-parallel: 1
+      matrix:
+        terraform_version: [1.5.6, 1.10.1]
+        os: [ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.terraform_version }}
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23.x
+
+      - name: Run Tests
+        working-directory: test/
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+        run: |          
+          go install github.com/gruntwork-io/terratest/cmd/terratest_log_parser@latest
+          go mod tidy
+          go test -v -timeout 60m -coverprofile=coverage-examples-complete.out -race -covermode=atomic | tee test_output.log
+          terratest_log_parser -testlog test_output.log -outputdir results
+
+      - name: Test Summary
+        uses: test-summary/action@v2
+        with:
+          paths: |
+            test/results/**/*.xml
+            test/results/*.xml
+
+  opentofu-e2e:
+    name: E2E Tests (OpenTofu)
+    strategy:
+      max-parallel: 1
+      matrix:
+        opentofu_version: [1.6.0, 1.8.7]
+        os: [ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ matrix.opentofu_version }}
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23.x
+
+      - name: Run Tests
+        working-directory: test/
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+        run: |
+          go install github.com/gruntwork-io/terratest/cmd/terratest_log_parser@latest
+          go mod tidy
+          go test -v -timeout 60m -coverprofile=coverage-examples-complete.out -race -covermode=atomic | tee test_output.log
+          terratest_log_parser -testlog test_output.log -outputdir results
+
+      - name: Test Summary
+        uses: test-summary/action@v2
+        with:
+          paths: |
+            test/results/**/*.xml
+            test/results/*.xml
+
