@@ -1,4 +1,5 @@
 # Terraform AWS SSM Parameters Module
+[![Tests](https://github.com/automationd/atun/actions/workflows/tests.yml/badge.svg)](https://github.com/AutomationD/atun/actions/workflows/tests.yml)
 
 The main goal of the module is to provide a consistent way to manage service SSM parameters. Suitable for use with [External Secrets](https://external-secrets.io/latest/).
 
