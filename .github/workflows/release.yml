@@ -1,0 +1,22 @@
+name: Release
+on:
+  release:
+    types: [published]
+jobs:
+  internal-slack-notification:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Post to Slack
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_COLOR: good
+        SLACK_CHANNEL: core-sre
+        SLACK_ICON_EMOJI: ":rocket:"
+        SLACK_MESSAGE: "Release ${{ github.event.release.tag_name }} was just published!"
+        SLACK_TITLE: "Release Notification"
+        SLACK_USERNAME: GitHub Actions
+        SLACK_FOOTER: ${{ github.event.repository.name }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
